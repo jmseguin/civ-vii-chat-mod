@@ -1,0 +1,236 @@
+.civ-vii-chat-frame {
+    position: absolute;
+    left: 7rem;
+    top: 8rem;
+    width: 34rem;
+    max-width: 90vw;
+    height: 44rem;
+    max-height: 80vh;
+    border: 0.0555555556rem solid rgba(196, 176, 120, 0.72);
+    background: rgba(8, 13, 20, 0.88);
+    box-shadow: 0 0.3rem 1.2rem rgba(0, 0, 0, 0.6);
+}
+
+.civ-vii-chat {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0.45rem 1rem 1rem;
+    color: #d5d0c4;
+}
+
+.civ-vii-chat__top {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.95rem;
+    border-bottom: 0.0555555556rem solid rgba(196, 176, 120, 0.45);
+}
+
+.civ-vii-chat__emblem {
+    position: absolute;
+    left: 0;
+    width: 2.3rem;
+    height: 2.3rem;
+    background-image: url("fs://game/civ-vii-chat-mod/ui/icons/civ_vii_chat_icon.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.civ-vii-chat__title {
+    font-family: TitleFont, serif;
+    font-size: 1.6rem;
+    color: #d8c593;
+    text-transform: uppercase;
+}
+
+.civ-vii-chat__close {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.civ-vii-chat__roster {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0.4rem 0;
+    font-size: 0.85rem;
+    color: #a8a294;
+}
+
+.civ-vii-chat__chip {
+    margin: 0.15rem 0.5rem 0.15rem 0;
+    padding: 0.1rem 0.5rem;
+    border: 0.0555555556rem solid rgba(196, 176, 120, 0.35);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.civ-vii-chat__log {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    border: 0.0555555556rem solid rgba(196, 176, 120, 0.25);
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.civ-vii-chat__messages {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    padding: 0.5rem 0.7rem;
+    overflow-y: scroll;
+}
+
+.civ-vii-chat__empty {
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    top: 40%;
+    text-align: center;
+    color: #7f7a6e;
+    font-size: 0.95rem;
+}
+
+.civ-vii-chat__msg {
+    margin-bottom: 0.6rem;
+    padding: 0.35rem 0.55rem;
+    border-left: 0.2rem solid #e3c77d;
+    background: rgba(255, 255, 255, 0.035);
+}
+
+.civ-vii-chat__msg--self {
+    background: rgba(216, 197, 147, 0.08);
+}
+
+.civ-vii-chat__msg--direct {
+    background: rgba(127, 184, 230, 0.08);
+}
+
+.civ-vii-chat__meta {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 0.85rem;
+    margin-bottom: 0.15rem;
+}
+
+.civ-vii-chat__author {
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.03rem;
+}
+
+.civ-vii-chat__badge {
+    margin-left: 0.4rem;
+    padding: 0 0.3rem;
+    font-size: 0.7rem;
+    color: #0b111a;
+    background: #a8a294;
+}
+
+.civ-vii-chat__turn {
+    margin-left: auto;
+    color: #7f7a6e;
+    font-size: 0.75rem;
+}
+
+.civ-vii-chat__body {
+    font-size: 1rem;
+    line-height: 1.35;
+    color: #e6e1d4;
+}
+
+.civ-vii-chat__mention {
+    color: #7fb8e6;
+    font-weight: bold;
+    margin-right: 0.3rem;
+}
+
+.civ-vii-chat__composer {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 0.75rem;
+}
+
+.civ-vii-chat__input {
+    flex: 1 1 auto;
+    height: 2.4rem;
+    padding: 0 0.7rem;
+    font-size: 1rem;
+    color: #e6e1d4;
+    background: rgba(0, 0, 0, 0.45);
+    border: 0.0555555556rem solid rgba(196, 176, 120, 0.55);
+}
+
+.civ-vii-chat__input:focus {
+    border-color: #e3c77d;
+}
+
+.civ-vii-chat__send {
+    width: 2.4rem;
+    height: 2.4rem;
+    margin-left: 0.5rem;
+    background-image: url("fs://game/civ-vii-chat-mod/ui/icons/civ_vii_chat_send.png");
+    background-size: 70%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, 0.45);
+    border: 0.0555555556rem solid rgba(196, 176, 120, 0.55);
+    opacity: 0.55;
+}
+
+.civ-vii-chat__send--ready {
+    opacity: 1;
+}
+
+.civ-vii-chat__send:hover {
+    border-color: #f5e4b4;
+    background-color: rgba(216, 197, 147, 0.15);
+}
+
+.civ-vii-chat__target {
+    position: absolute;
+    left: 0;
+    top: -1.35rem;
+    font-size: 0.8rem;
+    color: #7fb8e6;
+}
+
+.civ-vii-chat__suggest {
+    position: absolute;
+    left: 0;
+    right: 3rem;
+    bottom: 2.7rem;
+    border: 0.0555555556rem solid rgba(196, 176, 120, 0.6);
+    background: rgba(8, 13, 20, 0.97);
+    z-index: 2;
+}
+
+.civ-vii-chat__suggest-item {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.95rem;
+}
+
+.civ-vii-chat__suggest-item--active,
+.civ-vii-chat__suggest-item:hover {
+    background: rgba(216, 197, 147, 0.18);
+    color: #f5e4b4;
+}
+
+.civ-vii-chat--hidden {
+    display: none;
+}
+
+.ssb__button-icon.civ-vii-chat-dock {
+    background-image: url("fs://game/civ-vii-chat-mod/ui/icons/civ_vii_chat_dock.png");
+    background-size: 72%;
+    background-position: center;
+    background-repeat: no-repeat;
+}

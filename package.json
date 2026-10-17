@@ -1,0 +1,15 @@
+{
+  "name": "civ-vii-chat-mod",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Standalone Civilization VII team chat mod for human and bot teammates.",
+  "scripts": {
+    "build": "node --experimental-strip-types build.ts",
+    "test": "node --experimental-strip-types tests/mod.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}

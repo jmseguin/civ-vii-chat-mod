@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Database>
+	<EnglishText>
+		<Row Tag="LOC_MOD_CIV_VII_CHAT_NAME">
+			<Text>Civ VII Chat Mod (Team Chat)</Text>
+		</Row>
+		<Row Tag="LOC_MOD_CIV_VII_CHAT_DESCRIPTION">
+			<Text>Team-only chat panel for teammates, including bot teammates. Supports @mentions to address a specific teammate.</Text>
+		</Row>
+		<Row Tag="LOC_CIV_VII_CHAT_OPEN">
+			<Text>Team Chat</Text>
+		</Row>
+		<Row Tag="LOC_CIV_VII_CHAT_HEADER">
+			<Text>TEAM CHAT</Text>
+		</Row>
+		<Row Tag="LOC_CIV_VII_CHAT_EMPTY">
+			<Text>No messages yet. Say hello to your team, or type @ to address a teammate.</Text>
+		</Row>
+		<Row Tag="LOC_CIV_VII_CHAT_PLACEHOLDER">
+			<Text>Message your team... (@ to mention)</Text>
+		</Row>
+		<Row Tag="LOC_CIV_VII_CHAT_SEND">
+			<Text>Send</Text>
+		</Row>
+	</EnglishText>
+</Database>

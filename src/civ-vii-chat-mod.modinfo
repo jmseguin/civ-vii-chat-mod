@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Mod id="civ-vii-chat-mod" version="1" xmlns="ModInfo">
+	<Properties>
+		<Name>LOC_MOD_CIV_VII_CHAT_NAME</Name>
+		<Description>LOC_MOD_CIV_VII_CHAT_DESCRIPTION</Description>
+		<Authors>Antigravity Agent</Authors>
+		<Package>Mod</Package>
+		<Version>1.0.0</Version>
+		<AffectsSavedGames>0</AffectsSavedGames>
+		<EnabledByDefault>1</EnabledByDefault>
+		<ShowInBrowser>1</ShowInBrowser>
+		<LastUpdated>2026-10-17</LastUpdated>
+	</Properties>
+	<Dependencies>
+		<Mod id="base-standard" title="LOC_MODULE_BASE_STANDARD_NAME"/>
+	</Dependencies>
+	<ActionCriteria>
+		<Criteria id="always">
+			<AlwaysMet></AlwaysMet>
+		</Criteria>
+	</ActionCriteria>
+	<ActionGroups>
+		<ActionGroup id="game-civ-vii-chat-mod" scope="game" criteria="always">
+			<Properties>
+				<LoadOrder>60000</LoadOrder>
+			</Properties>
+			<Actions>
+				<UIScripts>
+					<Item>ui/civ-vii-chat-store.js</Item>
+					<Item>ui/civ-vii-chat-panel.js</Item>
+					<Item>ui/civ-vii-chat-dock.js</Item>
+				</UIScripts>
+				<ImportFiles>
+					<Item>ui/civ-vii-chat-panel.html</Item>
+					<Item>ui/civ-vii-chat-panel.css</Item>
+					<Item>ui/icons/civ_vii_chat_dock.png</Item>
+					<Item>ui/icons/civ_vii_chat_icon.png</Item>
+					<Item>ui/icons/civ_vii_chat_send.png</Item>
+				</ImportFiles>
+				<UpdateText>
+					<Item>text/en_us/CivViiChatModText.xml</Item>
+				</UpdateText>
+			</Actions>
+		</ActionGroup>
+	</ActionGroups>
+	<LocalizedText>
+		<File>text/en_us/CivViiChatModText.xml</File>
+	</LocalizedText>
+</Mod>
