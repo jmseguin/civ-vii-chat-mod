@@ -53,6 +53,7 @@ class CivViiChatPanel extends Panel {
             engine?.on?.("TurnBegin", this.renderListener, this);
         } catch (_e) { /* optional */ }
         this.unsubscribe = chat()?.subscribe(() => this.render());
+        chat()?.setPanelOpen?.(true);
         this.render();
         try {
             FocusManager.get().setFocus(this.Root);
@@ -61,6 +62,7 @@ class CivViiChatPanel extends Panel {
     }
 
     onDetach() {
+        chat()?.setPanelOpen?.(false);
         this.unsubscribe?.();
         this.unsubscribe = null;
         try {
@@ -224,6 +226,7 @@ class CivViiChatPanel extends Panel {
         const store = chat();
         if (!store) return;
         const viewer = store.localPlayerId;
+        store.markAsRead?.(viewer);
         this.renderRoster(viewer);
         const msgs = store.visibleMessages(viewer);
         this.log.innerHTML = "";

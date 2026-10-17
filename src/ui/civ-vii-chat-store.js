@@ -1,6 +1,6 @@
 /**
  * Civ VII Chat Mod - standalone team conversation store, @mention parser,
- * network relay, and bot teammate responder.
+ * network relay, unread tracking, and bot teammate responder.
  *
  * Exposed as `window.CivViiChat` so the panel and dock button share a single
  * conversation instance per game.
@@ -13,6 +13,7 @@ const MARKER = "\u200B\u2063"; // invisible prefix identifying relayed Civ VII C
 const MAX_MESSAGES = 500;
 const BOT_REPLY_DELAY_MS = 900;
 export const CIV_VII_CHAT_EVENT = "civ-vii-chat-message";
+export const CIV_VII_CHAT_UNREAD_EVENT = "civ-vii-chat-unread-changed";
 
 const PALETTE = ["#e3c77d", "#7fb8e6", "#9ad37f", "#e69a7f", "#c79ae6", "#7fe6d3", "#e67fb4", "#d9d9d9"];
 
@@ -58,6 +59,9 @@ class CivViiChatStore {
     constructor() {
         this.messages = [];
         this.storageKey = null;
+        this.lastRaw = null;
+        this.lastReadSeqMap = {};
+        this.isPanelOpen = false;
         this.listeners = new Set();
         this.botResponders = new Set();
         this.seq = 0;
@@ -151,8 +155,15 @@ class CivViiChatStore {
         if (key === this.storageKey && raw === this.lastRaw && Array.isArray(this.messages)) return;
         this.storageKey = key;
         this.lastRaw = raw;
-        const parsed = raw ? safe(() => JSON.parse(raw), []) : [];
-        this.messages = Array.isArray(parsed) ? parsed : [];
+        const parsed = raw ? safe(() => JSON.parse(raw), null) : null;
+        if (Array.isArray(parsed)) {
+            this.messages = parsed;
+        } else if (parsed && typeof parsed === "object") {
+            this.messages = Array.isArray(parsed.messages) ? parsed.messages : [];
+            this.lastReadSeqMap = (parsed.readSeq && typeof parsed.readSeq === "object") ? parsed.readSeq : {};
+        } else {
+            this.messages = [];
+        }
         this.seq = this.messages.reduce((m, x) => Math.max(m, x?.seq || 0), 0);
         this.installNetworkListener();
     }
@@ -160,7 +171,11 @@ class CivViiChatStore {
     persist() {
         if (!Array.isArray(this.messages)) this.messages = [];
         if (this.messages.length > MAX_MESSAGES) this.messages = this.messages.slice(-MAX_MESSAGES);
-        const serialized = JSON.stringify(this.messages);
+        const payload = {
+            messages: this.messages,
+            readSeq: this.lastReadSeqMap
+        };
+        const serialized = JSON.stringify(payload);
         this.lastRaw = serialized;
         writePersistedString(this.storageKey, serialized);
     }
@@ -170,6 +185,40 @@ class CivViiChatStore {
         this.ensureLoaded();
         const team = this.teamOf(viewerId);
         return this.messages.filter((m) => m && m.team === team);
+    }
+
+    // ---------------------------------------------------------------- unread tracking
+    hasUnread(viewerId = this.localPlayerId) {
+        if (this.isPanelOpen) return false;
+        this.ensureLoaded();
+        const msgs = this.visibleMessages(viewerId);
+        const lastRead = this.lastReadSeqMap?.[viewerId] ?? 0;
+        return msgs.some((m) => m && m.from !== viewerId && (m.seq || 0) > lastRead);
+    }
+
+    markAsRead(viewerId = this.localPlayerId) {
+        this.ensureLoaded();
+        const msgs = this.visibleMessages(viewerId);
+        const maxSeq = msgs.reduce((m, x) => Math.max(m, x?.seq || 0), 0);
+        if (!this.lastReadSeqMap) this.lastReadSeqMap = {};
+        if (this.lastReadSeqMap[viewerId] !== maxSeq) {
+            this.lastReadSeqMap[viewerId] = maxSeq;
+            this.persist();
+            this.emitUnreadChange();
+        }
+    }
+
+    setPanelOpen(isOpen, viewerId = this.localPlayerId) {
+        this.isPanelOpen = !!isOpen;
+        if (this.isPanelOpen) {
+            this.markAsRead(viewerId);
+        } else {
+            this.emitUnreadChange();
+        }
+    }
+
+    emitUnreadChange() {
+        safe(() => window.dispatchEvent(new CustomEvent(CIV_VII_CHAT_UNREAD_EVENT, { detail: { hasUnread: this.hasUnread() } })));
     }
 
     // ----------------------------------------------------------------- sending
@@ -214,9 +263,14 @@ class CivViiChatStore {
             bot: this.isBot(fromId)
         };
         this.messages.push(msg);
+        if (this.isPanelOpen) {
+            if (!this.lastReadSeqMap) this.lastReadSeqMap = {};
+            this.lastReadSeqMap[this.localPlayerId] = msg.seq;
+        }
         this.persist();
         if (!opts.fromNetwork) this.relayToNetwork(msg);
         this.emit(msg);
+        this.emitUnreadChange();
         if (!opts.fromNetwork) this.notifyBots(msg);
         return msg;
     }
@@ -324,6 +378,7 @@ class CivViiChatStore {
         this.messages = this.messages.filter((m) => m && m.team !== team);
         this.persist();
         this.emit(null);
+        this.emitUnreadChange();
     }
 }
 

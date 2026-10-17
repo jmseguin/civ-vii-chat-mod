@@ -239,3 +239,16 @@
     background-position: center;
     background-repeat: no-repeat;
 }
+
+.civ-vii-chat-dock__badge {
+    position: absolute;
+    top: 0.18rem;
+    right: 0.18rem;
+    width: 0.72rem;
+    height: 0.72rem;
+    border-radius: 50%;
+    background-color: #38bdf8;
+    border: 0.11rem solid #080d14;
+    pointer-events: none;
+    z-index: 10;
+}

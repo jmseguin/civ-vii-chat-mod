@@ -103,5 +103,43 @@ if (visible.length !== 2) {
   throw new Error(`Expected 2 visible team messages, got ${visible.length}`);
 }
 
+// Unread notification testing
+if (store.hasUnread(0)) {
+  throw new Error("Expected hasUnread(0) to be false for sender's own messages");
+}
+
+// Teammate sends a message while panel is closed -> unread becomes true
+store.post(1, "Understood, moving units to bridge.");
+if (!store.hasUnread(0)) {
+  throw new Error("Expected hasUnread(0) to be true after teammate post when panel is closed");
+}
+
+// Marking as read clears the unread badge
+store.markAsRead(0);
+if (store.hasUnread(0)) {
+  throw new Error("Expected hasUnread(0) to be false after markAsRead(0)");
+}
+
+// While panel is open, incoming messages are immediately marked as read
+store.setPanelOpen(true, 0);
+store.post(1, "Scout reports barbarian camp nearby.");
+if (store.hasUnread(0)) {
+  throw new Error("Expected hasUnread(0) to be false while panel is open");
+}
+
+// Closing panel, then receiving a message sets unread
+store.setPanelOpen(false, 0);
+store.post(1, "Archers standing by.");
+if (!store.hasUnread(0)) {
+  throw new Error("Expected hasUnread(0) to be true after teammate post while panel is closed");
+}
+
+// Reopening panel clears unread
+store.setPanelOpen(true, 0);
+if (store.hasUnread(0)) {
+  throw new Error("Expected hasUnread(0) to be false upon opening panel");
+}
+
 console.log("All diagnostics tests for civ-vii-chat-mod passed!");
 process.exit(0);
+
