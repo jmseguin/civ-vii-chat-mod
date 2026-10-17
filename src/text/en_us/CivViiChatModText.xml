@@ -2,13 +2,13 @@
 <Database>
 	<EnglishText>
 		<Row Tag="LOC_MOD_CIV_VII_CHAT_NAME">
-			<Text>Civ VII Chat Mod (Team Chat)</Text>
+			<Text>Team Chat</Text>
 		</Row>
 		<Row Tag="LOC_MOD_CIV_VII_CHAT_DESCRIPTION">
 			<Text>Team-only chat panel for teammates, including bot teammates. Supports @mentions to address a specific teammate.</Text>
 		</Row>
 		<Row Tag="LOC_CIV_VII_CHAT_OPEN">
-			<Text>Team Chat</Text>
+			<Text>View Team Chat</Text>
 		</Row>
 		<Row Tag="LOC_CIV_VII_CHAT_HEADER">
 			<Text>TEAM CHAT</Text>

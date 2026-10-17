@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Mod id="civ-vii-chat-mod" version="1" xmlns="ModInfo">
 	<Properties>
-		<Name>Civ VII Chat Mod (Team Chat)</Name>
+		<Name>Team Chat</Name>
 		<Description>Team-only chat panel for teammates, including bot teammates. Supports @mentions to address a specific teammate.</Description>
 		<Authors>jmseguin</Authors>
 		<Package>Mod</Package>
