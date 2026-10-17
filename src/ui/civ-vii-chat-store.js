@@ -25,21 +25,27 @@ function safe(fn, fallback) {
     }
 }
 
+function hasSaveStore() {
+    return typeof GameTutorial !== "undefined" && typeof Database !== "undefined" && typeof Database.makeHash === "function";
+}
+
 function readPersistedString(key) {
-    if (typeof GameTutorial !== "undefined" && typeof Database !== "undefined" && typeof Database.makeHash === "function") {
+    if (hasSaveStore()) {
         const val = safe(() => GameTutorial.getProperty(Database.makeHash(key)), null);
-        if (typeof val === "string" && val.length > 0) return val;
+        return typeof val === "string" && val.length > 0 ? val : null;
     }
     const raw = safe(() => localStorage.getItem(key), null);
     return typeof raw === "string" ? raw : null;
 }
 
 function writePersistedString(key, value) {
-    if (typeof GameTutorial !== "undefined" && typeof Database !== "undefined" && typeof Database.makeHash === "function") {
+    if (hasSaveStore()) {
         try {
             GameTutorial.setProperty(Database.makeHash(key), value);
-            return;
-        } catch (_e) { /* fall through */ }
+        } catch (e) {
+            console.warn(LOG, "save-store persist failed", e);
+        }
+        return;
     }
     try {
         localStorage.setItem(key, value);
@@ -141,11 +147,10 @@ class CivViiChatStore {
 
     ensureLoaded() {
         const key = this.gameKey();
-        const turn = safe(() => Game.turn, 0);
-        if (key === this.storageKey && turn === this.loadedTurn && Array.isArray(this.messages)) return;
-        this.storageKey = key;
-        this.loadedTurn = turn;
         const raw = readPersistedString(key);
+        if (key === this.storageKey && raw === this.lastRaw && Array.isArray(this.messages)) return;
+        this.storageKey = key;
+        this.lastRaw = raw;
         const parsed = raw ? safe(() => JSON.parse(raw), []) : [];
         this.messages = Array.isArray(parsed) ? parsed : [];
         this.seq = this.messages.reduce((m, x) => Math.max(m, x?.seq || 0), 0);
@@ -155,7 +160,9 @@ class CivViiChatStore {
     persist() {
         if (!Array.isArray(this.messages)) this.messages = [];
         if (this.messages.length > MAX_MESSAGES) this.messages = this.messages.slice(-MAX_MESSAGES);
-        writePersistedString(this.storageKey, JSON.stringify(this.messages));
+        const serialized = JSON.stringify(this.messages);
+        this.lastRaw = serialized;
+        writePersistedString(this.storageKey, serialized);
     }
 
     /** Messages visible to `viewerId`: only those authored by their team. */
