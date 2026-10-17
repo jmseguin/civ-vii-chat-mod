@@ -141,8 +141,10 @@ class CivViiChatStore {
 
     ensureLoaded() {
         const key = this.gameKey();
-        if (key === this.storageKey && Array.isArray(this.messages)) return;
+        const turn = safe(() => Game.turn, 0);
+        if (key === this.storageKey && turn === this.loadedTurn && Array.isArray(this.messages)) return;
         this.storageKey = key;
+        this.loadedTurn = turn;
         const raw = readPersistedString(key);
         const parsed = raw ? safe(() => JSON.parse(raw), []) : [];
         this.messages = Array.isArray(parsed) ? parsed : [];
