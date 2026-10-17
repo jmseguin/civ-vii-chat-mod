@@ -54,7 +54,8 @@ g.CustomEvent = class CustomEvent {
 };
 g.dispatchEvent = () => true;
 g.localStorage = {
-  getItem: (k: string) => storage.get(k) ?? null,
+  // Simulate Civ VII Gameface returning "{}" for unset keys
+  getItem: (k: string) => storage.get(k) ?? "{}",
   setItem: (k: string, v: string) => storage.set(k, v)
 };
 g.GameContext = { localPlayerID: 0 };
@@ -92,9 +93,9 @@ if (!msg1 || msg1.to !== 1 || msg1.text !== "status report") {
   throw new Error(`@Name mention parsing failed: ${JSON.stringify(msg1)}`);
 }
 
-const msg2 = store.send("@P2 defend the river");
-if (!msg2 || msg2.to !== 1 || msg2.text !== "defend the river") {
-  throw new Error(`@P<number> mention parsing failed: ${JSON.stringify(msg2)}`);
+const msg2 = store.send("@P2 defend the river\nand hold the bridge");
+if (!msg2 || msg2.to !== 1 || msg2.text !== "defend the river\nand hold the bridge") {
+  throw new Error(`@P<number> multi-line mention parsing failed: ${JSON.stringify(msg2)}`);
 }
 
 const visible = store.visibleMessages(0);

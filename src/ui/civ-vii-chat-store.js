@@ -25,6 +25,29 @@ function safe(fn, fallback) {
     }
 }
 
+function readPersistedString(key) {
+    if (typeof GameTutorial !== "undefined" && typeof Database !== "undefined" && typeof Database.makeHash === "function") {
+        const val = safe(() => GameTutorial.getProperty(Database.makeHash(key)), null);
+        if (typeof val === "string" && val.length > 0) return val;
+    }
+    const raw = safe(() => localStorage.getItem(key), null);
+    return typeof raw === "string" ? raw : null;
+}
+
+function writePersistedString(key, value) {
+    if (typeof GameTutorial !== "undefined" && typeof Database !== "undefined" && typeof Database.makeHash === "function") {
+        try {
+            GameTutorial.setProperty(Database.makeHash(key), value);
+            return;
+        } catch (_e) { /* fall through */ }
+    }
+    try {
+        localStorage.setItem(key, value);
+    } catch (e) {
+        console.warn(LOG, "persist failed", e);
+    }
+}
+
 class CivViiChatStore {
     constructor() {
         this.messages = [];
@@ -52,9 +75,10 @@ class CivViiChatStore {
         const cfg = safe(() => Configuration.getPlayer(playerId), null);
         let name = "";
         if (cfg) {
-            name = safe(() => cfg.nickName, "") || safe(() => cfg.slotName, "");
+            name = safe(() => cfg.nickName, "");
         }
         if (!name) name = safe(() => Players.get(playerId).name, "");
+        if (!name && cfg) name = safe(() => cfg.slotName, "");
         name = name ? safe(() => Locale.compose(name), name) : "";
         return name || `Player ${playerId + 1}`;
     }
@@ -117,27 +141,26 @@ class CivViiChatStore {
 
     ensureLoaded() {
         const key = this.gameKey();
-        if (key === this.storageKey) return;
+        if (key === this.storageKey && Array.isArray(this.messages)) return;
         this.storageKey = key;
-        this.messages = safe(() => JSON.parse(localStorage.getItem(key) || "[]"), []);
-        this.seq = this.messages.reduce((m, x) => Math.max(m, x.seq || 0), 0);
+        const raw = readPersistedString(key);
+        const parsed = raw ? safe(() => JSON.parse(raw), []) : [];
+        this.messages = Array.isArray(parsed) ? parsed : [];
+        this.seq = this.messages.reduce((m, x) => Math.max(m, x?.seq || 0), 0);
         this.installNetworkListener();
     }
 
     persist() {
+        if (!Array.isArray(this.messages)) this.messages = [];
         if (this.messages.length > MAX_MESSAGES) this.messages = this.messages.slice(-MAX_MESSAGES);
-        try {
-            localStorage.setItem(this.storageKey, JSON.stringify(this.messages));
-        } catch (e) {
-            console.warn(LOG, "persist failed", e);
-        }
+        writePersistedString(this.storageKey, JSON.stringify(this.messages));
     }
 
     /** Messages visible to `viewerId`: only those authored by their team. */
     visibleMessages(viewerId = this.localPlayerId) {
         this.ensureLoaded();
         const team = this.teamOf(viewerId);
-        return this.messages.filter((m) => m.team === team);
+        return this.messages.filter((m) => m && m.team === team);
     }
 
     // ----------------------------------------------------------------- sending
@@ -146,11 +169,11 @@ class CivViiChatStore {
      * teammate id or -1 for whole team. Unknown @tokens are left in the text.
      */
     parse(raw, fromId) {
-        const text = (raw || "").trim();
+        const text = (raw || "").replace(/\r\n/g, "\n").trim();
         const m = /^@(\S+)\s*([\s\S]*)$/.exec(text);
         if (m) {
             const mate = this.resolveMention(m[1], fromId);
-            if (mate) return { to: mate.id, text: m[2].trim() };
+            if (mate) return { to: mate.id, text: m[2].replace(/^[ \t]+/, "").trim() };
         }
         return { to: -1, text };
     }
@@ -166,6 +189,7 @@ class CivViiChatStore {
      */
     post(fromId, raw, toId, opts = {}) {
         this.ensureLoaded();
+        if (!Array.isArray(this.messages)) this.messages = [];
         let { to, text } = this.parse(raw, fromId);
         if (typeof toId === "number" && toId >= 0) to = toId;
         if (!text) return null;
@@ -260,7 +284,7 @@ class CivViiChatStore {
     }
 
     relayToNetwork(msg) {
-        if (!this.isNetworkGame()) return; // local/hotseat: shared localStorage log is the transport
+        if (!this.isNetworkGame()) return; // local/hotseat: per-game store is the transport
         const target = this.teamChatTarget();
         if (!target) return;
         const prefix = msg.to >= 0 ? `@${this.mentionToken(msg.to)} ` : "";
@@ -286,8 +310,9 @@ class CivViiChatStore {
 
     clear() {
         this.ensureLoaded();
+        if (!Array.isArray(this.messages)) this.messages = [];
         const team = this.teamOf(this.localPlayerId);
-        this.messages = this.messages.filter((m) => m.team !== team);
+        this.messages = this.messages.filter((m) => m && m.team !== team);
         this.persist();
         this.emit(null);
     }

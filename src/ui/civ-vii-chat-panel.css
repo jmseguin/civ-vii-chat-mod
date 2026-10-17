@@ -143,6 +143,8 @@
     font-size: 1rem;
     line-height: 1.35;
     color: #e6e1d4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 .civ-vii-chat__mention {
@@ -155,18 +157,21 @@
     position: relative;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: stretch;
     margin-top: 0.75rem;
 }
 
 .civ-vii-chat__input {
     flex: 1 1 auto;
-    height: 2.4rem;
-    padding: 0 0.7rem;
+    height: 3.1rem;
+    padding: 0.35rem 0.7rem;
     font-size: 1rem;
+    line-height: 1.25;
     color: #e6e1d4;
     background: rgba(0, 0, 0, 0.45);
     border: 0.0555555556rem solid rgba(196, 176, 120, 0.55);
+    resize: none;
+    overflow-y: auto;
 }
 
 .civ-vii-chat__input:focus {
@@ -174,11 +179,11 @@
 }
 
 .civ-vii-chat__send {
-    width: 2.4rem;
-    height: 2.4rem;
+    width: 3.1rem;
+    height: 3.1rem;
     margin-left: 0.5rem;
     background-image: url("fs://game/civ-vii-chat-mod/ui/icons/civ_vii_chat_send.png");
-    background-size: 70%;
+    background-size: 65%;
     background-position: center;
     background-repeat: no-repeat;
     background-color: rgba(0, 0, 0, 0.45);
@@ -206,8 +211,8 @@
 .civ-vii-chat__suggest {
     position: absolute;
     left: 0;
-    right: 3rem;
-    bottom: 2.7rem;
+    right: 3.6rem;
+    bottom: 3.4rem;
     border: 0.0555555556rem solid rgba(196, 176, 120, 0.6);
     background: rgba(8, 13, 20, 0.97);
     z-index: 2;

@@ -14,7 +14,7 @@ class CivViiChatPanel extends Panel {
     constructor() {
         super(...arguments);
         this.engineInputListener = this.onEngineInput.bind(this);
-        this.closeListener = this.close.bind(this);
+        this.closeListener = () => this.close();
         this.sendListener = this.onSend.bind(this);
         this.keyListener = this.onKeyDown.bind(this);
         this.inputListener = this.onInputChanged.bind(this);
@@ -54,6 +54,9 @@ class CivViiChatPanel extends Panel {
         } catch (_e) { /* optional */ }
         this.unsubscribe = chat()?.subscribe(() => this.render());
         this.render();
+        try {
+            FocusManager.get().setFocus(this.Root);
+        } catch (_e) { /* fall through */ }
         this.focusInput();
     }
 
@@ -81,10 +84,7 @@ class CivViiChatPanel extends Panel {
     }
 
     focusInput() {
-        try {
-            FocusManager.get().setFocus(this.input);
-        } catch (_e) { /* fall through */ }
-        this.input.focus?.();
+        this.input?.focus?.();
     }
 
     onEngineInput(inputEvent) {
@@ -109,10 +109,23 @@ class CivViiChatPanel extends Panel {
     }
 
     // ------------------------------------------------------------ composing
+    insertNewlineAtCursor() {
+        const val = this.input.value || "";
+        const start = typeof this.input.selectionStart === "number" ? this.input.selectionStart : val.length;
+        const end = typeof this.input.selectionEnd === "number" ? this.input.selectionEnd : val.length;
+        this.input.value = val.slice(0, start) + "\n" + val.slice(end);
+        try {
+            this.input.selectionStart = this.input.selectionEnd = start + 1;
+        } catch (_e) { /* ignore if unsupported */ }
+        this.onInputChanged();
+    }
+
     onKeyDown(e) {
         const suggesting = !this.suggestBox.classList.contains(HIDDEN) && this.suggestions.length > 0;
         const key = e.key || "";
         const code = e.keyCode;
+        const isEnter = key === "Enter" || code === 13;
+
         if (suggesting && (key === "ArrowDown" || code === 40)) {
             this.suggestIndex = (this.suggestIndex + 1) % this.suggestions.length;
             this.renderSuggestions();
@@ -121,10 +134,15 @@ class CivViiChatPanel extends Panel {
             this.suggestIndex = (this.suggestIndex - 1 + this.suggestions.length) % this.suggestions.length;
             this.renderSuggestions();
             e.preventDefault();
-        } else if (suggesting && (key === "Tab" || key === "Enter" || code === 9 || code === 13)) {
+        } else if (suggesting && (key === "Tab" || code === 9 || (isEnter && !e.shiftKey))) {
             this.applySuggestion(this.suggestions[this.suggestIndex]);
             e.preventDefault();
-        } else if (key === "Enter" || code === 13) {
+        } else if (isEnter && e.shiftKey) {
+            // Shift+Enter inserts a carriage return
+            this.insertNewlineAtCursor();
+            e.preventDefault();
+        } else if (isEnter) {
+            // Enter (without Shift) sends the message
             this.onSend();
             e.preventDefault();
         } else if (key === "Escape" || code === 27) {
@@ -195,9 +213,9 @@ class CivViiChatPanel extends Panel {
     onSend() {
         const value = this.input.value || "";
         if (!value.trim()) return;
-        chat().send(value);
         this.input.value = "";
         this.onInputChanged();
+        chat().send(value);
         this.focusInput();
     }
 
