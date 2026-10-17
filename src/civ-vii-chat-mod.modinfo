@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Mod id="civ-vii-chat-mod" version="1" xmlns="ModInfo">
 	<Properties>
-		<Name>LOC_MOD_CIV_VII_CHAT_NAME</Name>
-		<Description>LOC_MOD_CIV_VII_CHAT_DESCRIPTION</Description>
-		<Authors>Antigravity Agent</Authors>
+		<Name>Civ VII Chat Mod (Team Chat)</Name>
+		<Description>Team-only chat panel for teammates, including bot teammates. Supports @mentions to address a specific teammate.</Description>
+		<Authors>jmseguin</Authors>
 		<Package>Mod</Package>
 		<Version>1.0.0</Version>
 		<AffectsSavedGames>0</AffectsSavedGames>
